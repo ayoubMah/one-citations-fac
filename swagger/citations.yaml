@@ -15,8 +15,8 @@ components:
       description: This API uses OAuth 2 with the implicit grant flow. [More info](https://api.example.com/docs/auth)
       flows:
         authorizationCode:   # <---- OAuth flow(authorizationCode, implicit, password or clientCredentials)
-          authorizationUrl: http://keycloak:8080/realms/one-citations/protocol/openid-connect/auth
-          tokenUrl: http://keycloak:8080/realms/one-citations/protocol/openid-connect/token
+          authorizationUrl: http://keycloak:8085/realms/one-citations/protocol/openid-connect/auth
+          tokenUrl: http://keycloak:8085/realms/one-citations/protocol/openid-connect/token
           scopes:
             profile: access profile
             email: access email

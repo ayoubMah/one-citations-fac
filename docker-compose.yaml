@@ -5,7 +5,7 @@ services:
       KC_BOOTSTRAP_ADMIN_USERNAME: keycloak
       KC_BOOTSTRAP_ADMIN_PASSWORD: keycloak
     ports:
-      - 8080:8080
+      - 8085:8080
   mongo:
     image: mongo
     ports:
