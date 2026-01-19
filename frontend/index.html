@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>One Citations</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <h1>One Citations</h1>
+        <div id="auth-status">
+            <span id="user-display"></span>
+            <button id="login-btn">Login</button>
+            <button id="logout-btn" style="display:none;">Logout</button>
+        </div>
+      </header>
+
+      <main>
+        <!-- Login Form -->
+        <section id="login-section" class="hidden">
+            <h2>Login</h2>
+            <form id="login-form">
+                <input type="text" id="username" placeholder="Username" required />
+                <input type="password" id="password" placeholder="Password" required />
+                <button type="submit">Sign In</button>
+                <button type="button" id="cancel-login">Cancel</button>
+            </form>
+        </section>
+
+        <!-- Public Content -->
+        <section id="public-section">
+            <div class="card">
+                <h2>Random Image</h2>
+                <div id="image-container">Loading...</div>
+                <button id="refresh-image">Next Image</button>
+            </div>
+            
+            <div class="card">
+                <h2>Random Citation</h2>
+                <div id="citation-container">Loading...</div>
+                <button id="refresh-citation">Next Citation</button>
+            </div>
+        </section>
+
+        <!-- Writer Section -->
+        <section id="writer-section" class="hidden">
+            <h2>Submit Citation</h2>
+            <form id="submit-form">
+                <textarea id="citation-text" placeholder="Enter your citation..." required></textarea>
+                <button type="submit">Submit</button>
+            </form>
+        </section>
+
+        <!-- Moderator Section -->
+        <section id="moderator-section" class="hidden">
+            <h2>Pending Citations</h2>
+            <button id="refresh-pending">Refresh List</button>
+            <table id="pending-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Text</th>
+                        <th>Submitter</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="pending-body">
+                    <!-- Rows here -->
+                </tbody>
+            </table>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
