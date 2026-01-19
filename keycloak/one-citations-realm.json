@@ -556,6 +556,15 @@
   },
   "clients": [
     {
+      "clientId": "test-client",
+      "enabled": true,
+      "publicClient": true,
+      "directAccessGrantsEnabled": true,
+      "redirectUris": [
+        "*"
+      ]
+    },
+    {
       "id": "044933b3-8f3c-4ff2-8325-89f7fbf28547",
       "clientId": "account",
       "name": "${client_account}",

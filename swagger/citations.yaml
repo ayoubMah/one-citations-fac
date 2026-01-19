@@ -4,38 +4,252 @@ info:
   description: Notre super API pour notre application de gestions des citations
   version: 1.0.0
 servers:
+  - url: http://localhost:8000/api/v1
+    description: API Gateway (Kong)
   - url: http://localhost:9080/api/v1
     description: Environnement de test Docker
   - url: http://localhost:9090/api/v1
     description: Environnement de test local
 components:
   securitySchemes:
-    oAuthSample:    # <---- arbitrary name
+    oAuthSample:
       type: oauth2
-      description: This API uses OAuth 2 with the implicit grant flow. [More info](https://api.example.com/docs/auth)
+      description: This API uses OAuth 2 with the implicit grant flow.
       flows:
-        authorizationCode:   # <---- OAuth flow(authorizationCode, implicit, password or clientCredentials)
+        authorizationCode:
           authorizationUrl: http://keycloak:8085/realms/one-citations/protocol/openid-connect/auth
           tokenUrl: http://keycloak:8085/realms/one-citations/protocol/openid-connect/token
           scopes:
             profile: access profile
             email: access email
+  schemas:
+    ProfileDto:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+          readOnly: true
+        mail:
+          type: string
+          readOnly: true
+        age:
+          type: integer
+          minimum: 13
+        firstName:
+          type: string
+          readOnly: true
+        lastName:
+          type: string
+          readOnly: true
+        created:
+          type: string
+          format: date-time
+        modified:
+          type: string
+          format: date-time
+    CitationDto:
+      type: object
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+        status:
+          type: string
+          enum: [PENDING, VALIDATED]
+        submitterId:
+          type: string
+        validatorId:
+          type: string
+        submitted:
+          type: string
+          format: date-time
+        validated:
+          type: string
+          format: date-time
+    Image:
+      type: object
+      properties:
+        id:
+          type: string
+        filename:
+          type: string
+        # data field omitted in API response typically, unless specific endpoint returns binary
+        contentType:
+          type: string
+
 security: 
   - oAuthSample: 
     - profile
     - email
 paths:
+  /profiles:
+    post:
+      summary: Create a new profile (claims from token)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - age
+              properties:
+                age:
+                  type: integer
+                  description: Age of the user
+                  example: 25
+      responses:
+        '201':
+          description: Profile created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileDto'
+    get:
+      summary: Search profiles
+      responses:
+        '200':
+          description: List of profiles
+          content:
+            application/json:
+              schema:
+                type: object
+  
+  /profiles/{id}:
+    get:
+      summary: Get a profile by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Profile found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileDto'
+    put:
+      summary: Update a profile
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                age:
+                  type: integer
+                  description: Age of the user
+                  example: 26
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileDto'
+
   /profiles/current:
     get:
       summary: Retourne le profile courant de l'utilisateur
       responses:
-        '200':    # status code
-          description: A JSON array of user names
+        '200':
+          description: Current user profile
           content:
             application/json:
               schema: 
                 type: object
-                properties:
-                  name:
-                    type: string
-                    
+
+  /citations:
+    post:
+      summary: Create a new citation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - text
+              properties:
+                text:
+                  type: string
+                  example: "This is a citation."
+      responses:
+        '201':
+          description: Citation created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CitationDto'
+
+  /citations/random:
+    get:
+      summary: Get a random validated citation
+      responses:
+        '200':
+          description: Random citation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CitationDto'
+
+  /citations/pending:
+    get:
+      summary: List pending citations (Moderator)
+      responses:
+        '200':
+          description: List of pending citations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CitationDto'
+
+  /citations/{id}/validate:
+    put:
+      summary: Validate a citation (Moderator)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Citation validated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CitationDto'
+
+  /images/random:
+    get:
+      summary: Get a random image
+      parameters:
+        - in: query
+          name: width
+          schema:
+            type: integer
+        - in: query
+          name: height
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Random (resized) image
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary

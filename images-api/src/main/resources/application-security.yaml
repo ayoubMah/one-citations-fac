@@ -3,7 +3,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://keycloak:8080/realms/one-citations/protocol/openid-connect/certs
+          issuer-uri: http://keycloak:8080/realms/one-citations
 logging:
   level:
     org:

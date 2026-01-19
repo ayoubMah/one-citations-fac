@@ -18,6 +18,24 @@ services:
       spring_profiles_active: security,docker
     depends_on:
       - mongo
+  citations:
+    build: ./citations-api
+    ports:
+      - 9081:8080
+    environment:
+      spring_profiles_active: security,docker
+    depends_on:
+      - mongo
+  images:
+    build: ./images-api
+    ports:
+      - 9082:8080
+    environment:
+      spring_profiles_active: security,docker
+      logging.level.org.springframework.security: TRACE
+      logging.level.org.springframework.web: TRACE
+    depends_on:
+      - mongo
   swagger:
     image: swaggerapi/swagger-ui
     environment:
@@ -25,10 +43,26 @@ services:
       DEEP_LINKING: "true"
       OAUTH2_REDIRECT_URL: http://localhost:8888/oauth2-redirect.html
       OAUTH_CLIENT_ID: swagger
-      OAUTH_USE_PKCE: "true"  
+      OAUTH_USE_PKCE: "true"
       OAUTH_REALM: tindeer
       OAUTH_APP_NAME: swagger
-    ports: 
+    ports:
       - 8888:8080
     volumes:
       - ./swagger:/doc
+  kong:
+    image: kong:3.4
+    volumes:
+      - ./kong:/usr/local/kong/declarative
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+      - "8001:8001"
